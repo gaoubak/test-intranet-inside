@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+
+  php:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: php
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./backend:/var/www
+    networks:
+      - intranet
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: laravel
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    networks:
+      - intranet
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - 8000:80
+    volumes:
+      - ./backend:/var/www
+      - ./backend/nginx:/etc/nginx/conf.d
+    networks:
+      - intranet
+    depends_on:
+      - php
+
+
+networks:
+  intranet:
+    driver: bridge
