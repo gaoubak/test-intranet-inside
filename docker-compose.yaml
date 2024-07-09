@@ -43,6 +43,17 @@ services:
     depends_on:
       - php
 
+  adminer:
+    container_name: adminer
+    depends_on:
+      - postgres
+    image: adminer
+    ports:
+      - 8080:8080
+    restart: always
+    networks:
+      - intranet
+
 
 networks:
   intranet:
