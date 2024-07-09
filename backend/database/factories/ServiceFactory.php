@@ -15,6 +15,7 @@ class ServiceFactory extends Factory
         "communication",
         "human resources"
     ];
+    
    /**
      * The name of the factory's corresponding model.
      *

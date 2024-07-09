@@ -13,11 +13,39 @@ class UserController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        return UserResource::collection(User::all());
+        $page = request()->page;
+        $position_held = request()->position_held;
+        $user_service = request()->user_service;
+
+        $users = User::query()->with('services');
+
+        if (isset($page)) {
+            if (isset($position_held)) {
+                $users = $users->where('position_held', $position_held);
+            }
+
+            if (isset($user_service)) {
+                $users = $users->whereRelation('services', 'name', '=', $user_service);
+            }
+
+            return UserResource::collection($users->paginate(10));
+        }
+  
+        if (isset($position_held)) {
+            $users = $users->where('position_held', $position_held);
+        }
+
+        if (isset($user_service)) {
+            $users = $users->whereRelation('services', 'name', '=', $user_service);
+        }
+
+        return UserResource::collection($users->get());
     }
 
     public function show(User $user): UserResource
     {
+        $user->load('services');
+
         return UserResource::make($user);
     }
 
