@@ -11,6 +11,33 @@ use Illuminate\Http\Response;
 
 class UserController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/users",
+     *     summary="Get list of users",
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="position_held",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="user_service",
+     *         in="query",
+     *         required=false,
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *     )
+     * )
+     */
     public function index(): AnonymousResourceCollection
     {
         $page = request()->page;
@@ -42,6 +69,26 @@ class UserController extends Controller
         return UserResource::collection($users->get());
     }
 
+    /**
+     * @OA\Get(
+     *     path="/users/{user}",
+     *     summary="Get a user by ID",
+     *     @OA\Parameter(
+     *         name="user",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="User not found"
+     *     )
+     * )
+     */
     public function show(User $user): UserResource
     {
         $user->load('services');
@@ -49,6 +96,29 @@ class UserController extends Controller
         return UserResource::make($user);
     }
 
+    /**
+     * @OA\Put(
+     *     path="/users/{user}",
+     *     summary="Update a user by ID",
+     *     @OA\Parameter(
+     *         name="user",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="User not found"
+     *     )
+     * )
+     */
     public function update(User $user, updateUserRequest $request): UserResource
     {
         $validated = $request->validated();
@@ -58,6 +128,26 @@ class UserController extends Controller
         return UserResource::make($user);
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/users/{user}",
+     *     summary="Delete a user by ID",
+     *     @OA\Parameter(
+     *         name="user",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Successful operation"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="User not found"
+     *     )
+     * )
+     */
     public function destroy(User $user): Response
     {
         $user->delete();
